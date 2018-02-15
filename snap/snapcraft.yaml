@@ -1,0 +1,20 @@
+
+name: gitl
+version: '1.0'
+summary: Git loop
+description: Git loop inspired by gitsh.
+grade: stable
+confinement: classic
+
+parts:
+  gitl:
+    plugin: dump
+    source: https://github.com/wieczorek1990/gitl.git
+    source-type: git
+    stage-packages:
+      - git
+      - python3
+
+apps:
+  gitl:
+    command: bin/gitl.py
