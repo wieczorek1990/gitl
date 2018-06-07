@@ -1,6 +1,6 @@
 
 name: gitl
-version: '1.0'
+version: '1.1'
 summary: Git loop
 description: Git loop inspired by gitsh.
 grade: stable
@@ -13,6 +13,7 @@ parts:
     source-type: git
     stage-packages:
       - git
+      - libc6
       - python3
 
 apps:

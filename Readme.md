@@ -4,22 +4,53 @@ gitl
 
 Git loop inspired by [gitsh](https://github.com/thoughtbot/gitsh).
 
-## Old style make
+Features:
 
-To install type:
+* loop
+* branch and file completion
+
+Contributions welcome.
+
+## Installation
+
+### make
+
+To install in `/usr/local/` prefix type:
 
 ```bash
 sudo make install
 ```
 
-## Snapcraft
+### Snapcraft
 
 To install download [snap](https://snapcraft.io) and type:
 
 ```bash
-snap install gitl # --edge --devmode for development version if any
+snap install gitl
 ```
 
-Put your .gitconfig in `~/snap/gitl/current/`.
+Link your `.gitconfig` to `~/snap/gitl/current/`:
 
-Contributions welcome.
+```bash
+ln -s $HOME/.gitconfig $HOME/snap/gitl/current/.gitconfig
+```
+
+## Snapcraft 101
+
+Debugging snap:
+
+```bash
+snapcraft
+snap install --classic --dangerous gitl_$version_amd64.snap
+snap run --shell gitl
+```
+
+Releasing new snap into `stable` channel:
+
+```bash
+snapcraft
+snapcraft push gitl_$version_amd64.snap
+# snap info gitl
+snapcraft release gitl $revision stable
+snap refresh --amend gitl
+```
