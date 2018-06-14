@@ -11,6 +11,8 @@ Features:
 
 Contributions welcome.
 
+Published under MIT License.
+
 ## Installation
 
 ### make
