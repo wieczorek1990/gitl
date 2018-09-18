@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import functools
 import glob
@@ -76,8 +76,10 @@ class GitLoop:
                 input = read_input(self.anchor)
                 if input == '':
                     continue
-                subcommand = shlex.split(input)
-                subprocess.call(['git'] + subcommand)
+                commands = input.split(';')
+                for command in commands:
+                    subcommand = shlex.split(command)
+                    subprocess.call(['git'] + subcommand)
         except (EOFError, KeyboardInterrupt):
             pass
 
