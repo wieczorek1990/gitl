@@ -8,6 +8,7 @@ Features:
 
 * loop
 * branch and file completion
+* history
 
 Contributions welcome.
 

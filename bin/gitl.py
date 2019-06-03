@@ -12,6 +12,7 @@ import time
 
 CACHE = {}
 CACHE_TTL = 0.1
+HISTORY = os.path.expanduser('~/.gitl_history')
 VERSION = '0.1.0'
 
 
@@ -53,12 +54,6 @@ def complete(text, state):
     return completions[state]
 
 
-read_input = input
-readline.parse_and_bind('tab: complete')
-readline.set_completer(complete)
-readline.set_completer_delims(' \t')
-
-
 class Anchor:
     def __init__(self):
         self.root = os.getcwd().split('/')[-1] + ': '
@@ -70,14 +65,22 @@ class Anchor:
 class GitLoop:
     def __init__(self):
         self.anchor = Anchor()
+        self.init_readline()
+
+    def init_readline(self):
+        readline.parse_and_bind('tab: complete')
+        readline.set_completer(complete)
+        readline.set_completer_delims(' \t')
+        self.init_history_file()
+        readline.read_history_file(HISTORY)
 
     def run(self):
         try:
             while True:
-                input = read_input(self.anchor)
-                if input == '':
+                input_data = input(self.anchor)
+                if input_data == '':
                     continue
-                commands = input.split(';')
+                commands = input_data.split(';')
                 for command in commands:
                     try:
                         subcommand = shlex.split(command)
@@ -90,9 +93,19 @@ class GitLoop:
     def version(self):
         print('gitl version {}'.format(VERSION))
 
+    def init_history_file(self):
+        if not os.path.exists(HISTORY):
+            with open(HISTORY, 'a'):
+                pass
+
+    def exit(self):
+        readline.write_history_file(HISTORY)
+
+
 if __name__ == '__main__':
     git_loop = GitLoop()
     if len(sys.argv) == 2 and sys.argv[1] == '--version':
         git_loop.version()
     else:
         git_loop.run()
+    git_loop.exit()
