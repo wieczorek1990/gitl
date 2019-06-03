@@ -12,6 +12,7 @@ import time
 
 CACHE = {}
 CACHE_TTL = 0.1
+VERSION = '0.1.0'
 
 
 def cache(func):
@@ -86,6 +87,12 @@ class GitLoop:
         except (EOFError, KeyboardInterrupt):
             pass
 
+    def version(self):
+        print('gitl version {}'.format(VERSION))
 
 if __name__ == '__main__':
-    GitLoop().run()
+    git_loop = GitLoop()
+    if len(sys.argv) == 2 and sys.argv[1] == '--version':
+        git_loop.version()
+    else:
+        git_loop.run()
