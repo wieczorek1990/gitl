@@ -78,8 +78,11 @@ class GitLoop:
                     continue
                 commands = input.split(';')
                 for command in commands:
-                    subcommand = shlex.split(command)
-                    subprocess.call(['git'] + subcommand)
+                    try:
+                        subcommand = shlex.split(command)
+                        subprocess.call(['git'] + subcommand)
+                    except ValueError:
+                        pass
         except (EOFError, KeyboardInterrupt):
             pass
 
