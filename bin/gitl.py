@@ -9,11 +9,11 @@ import subprocess
 import sys
 import time
 
+VERSION = '2.0.0'
 
 CACHE = {}
 CACHE_TTL = 0.1
 HISTORY = os.path.expanduser('~/.gitl_history')
-VERSION = '0.3.0'
 
 
 def cache(func):

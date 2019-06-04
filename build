@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker pull snapcore/snapcraft:stable
+docker run -v "$PWD":/build -w /build snapcore/snapcraft:stable snapcraft
