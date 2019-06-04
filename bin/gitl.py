@@ -13,7 +13,7 @@ import time
 CACHE = {}
 CACHE_TTL = 0.1
 HISTORY = os.path.expanduser('~/.gitl_history')
-VERSION = '0.1.0'
+VERSION = '0.3.0'
 
 
 def cache(func):
@@ -89,9 +89,7 @@ class GitLoop:
                         pass
         except (EOFError, KeyboardInterrupt):
             pass
-
-    def version(self):
-        print('gitl version {}'.format(VERSION))
+        self.exit()
 
     def init_history_file(self):
         if not os.path.exists(HISTORY):
@@ -102,10 +100,46 @@ class GitLoop:
         readline.write_history_file(HISTORY)
 
 
-if __name__ == '__main__':
-    git_loop = GitLoop()
-    if len(sys.argv) == 2 and sys.argv[1] == '--version':
-        git_loop.version()
+class ArgsParser:
+    def __init__(self, argv):
+        self.argv = argv
+
+    def two(self):
+        return len(self.argv) == 2
+
+    def first(self, option):
+        return self.argv[1] == '--{}'.format(option)
+
+    def is_version(self):
+        return self.two() and self.first('version')
+
+    def is_help(self):
+        return self.two() and self.first('help')
+
+
+class Command:
+    @staticmethod
+    def version():
+        print('gitl version {}'.format(VERSION))
+
+    @staticmethod
+    def help():
+        print('SYNOPSIS\n'
+              '\tgitl\n\n'
+              'OPTIONS\n'
+              '\t--help     Print help\n'
+              '\t--version  Print version\n')
+
+
+def main():
+    args_parser = ArgsParser(sys.argv)
+    if args_parser.is_version():
+        Command.version()
+    elif args_parser.is_help():
+        Command.help()
     else:
-        git_loop.run()
-    git_loop.exit()
+        GitLoop().run()
+
+
+if __name__ == '__main__':
+    main()
