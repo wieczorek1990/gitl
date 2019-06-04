@@ -21,7 +21,5 @@ Published under MIT License.
 To install in `/usr/local/` prefix type:
 
 ```bash
-git clone git@github.com:wieczorek1990/gitl.git
-cd gitl/
-sudo make install
+git clone git@github.com:wieczorek1990/gitl.git && cd gitl/ && sudo make install
 ```
