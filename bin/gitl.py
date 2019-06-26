@@ -9,11 +9,18 @@ import subprocess
 import sys
 import time
 
-VERSION = '2.0.0'
+VERSION = '2.0.1'
 
 CACHE = {}
 CACHE_TTL = 0.1
 HISTORY = os.path.expanduser('~/.gitl_history')
+
+
+def setup_home():
+    home = subprocess.run(['perl', '-we', 'print((getpwuid $>)[7])'],
+                          stdout=subprocess.PIPE)\
+                     .stdout.decode('utf-8')
+    os.environ['HOME'] = home
 
 
 def cache(func):
@@ -132,6 +139,7 @@ class Command:
 
 
 def main():
+    setup_home()
     args_parser = ArgsParser(sys.argv)
     if args_parser.is_version():
         Command.version()
