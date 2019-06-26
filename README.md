@@ -32,4 +32,19 @@ To install download [snap](https://snapcraft.io) and type:
 snap install gitl
 ```
 
+Currently I'm trying to figure out how to make `.gitconfig` work as normally.
+
+You might want to link your regular `.gitconfig`:
+
+```
+ln -fs ~/.gitconfig ~/snap/gitl/current/.gitconfig
+```
+
+If you use aliases, you must precede them with `!git` like so:
+
+```
+[alias]
+    v = !git version
+```
+
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/gitl)
