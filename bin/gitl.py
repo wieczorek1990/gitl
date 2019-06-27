@@ -16,6 +16,11 @@ CACHE_TTL = 0.1
 HISTORY = os.path.expanduser('~/.gitl_history')
 
 
+def run(args, env=None):
+    return subprocess.run(args, stdout=subprocess.PIPE, env=env)\
+        .stdout.decode('utf-8')
+
+
 def setup_environ():
     os.environ['GIT_DISCOVERY_ACROSS_FILESYSTEM'] = '1'
 
@@ -23,10 +28,8 @@ def setup_environ():
 def setup_home():
     env = os.environ.copy()
     env['LC_ALL'] = 'C'
-    home = subprocess.run(['perl', '-we', 'print((getpwuid $>)[7])'],
-                          stdout=subprocess.PIPE, env=env)\
-                     .stdout.decode('utf-8')
-    os.environ['HOME'] = home
+    os.environ['HOME'] = run(['perl', '-we', 'print((getpwuid $>)[7])'],
+                             env=env)
 
 
 def cache(func):
@@ -47,14 +50,13 @@ def cache(func):
 
 @cache
 def complete_branches(text):
-    with subprocess.Popen(['git', 'branch'],
-                          stdout=subprocess.PIPE) as proc:
-        branches = (line[2:-1].decode()
-                    for line in proc.stdout.readlines())
-        valid_branches = filter(lambda branch:
-                                branch.startswith(text),
-                                branches)
-        return list(valid_branches)
+    output = run(['git', 'branch'])
+    branches = (line[2:-1].decode()
+                for line in output.readlines())
+    valid_branches = filter(lambda branch:
+                            branch.startswith(text),
+                            branches)
+    return list(valid_branches)
 
 
 @cache
@@ -97,7 +99,7 @@ class GitLoop:
                 for command in commands:
                     try:
                         subcommand = shlex.split(command)
-                        subprocess.call(['git'] + subcommand)
+                        run(['git'] + subcommand)
                     except ValueError:
                         pass
         except (EOFError, KeyboardInterrupt):
