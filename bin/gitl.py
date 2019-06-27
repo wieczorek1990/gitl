@@ -13,7 +13,7 @@ VERSION = '2.0.2'
 
 CACHE = {}
 CACHE_TTL = 0.1
-HISTORY = os.path.expanduser('~/.gitl_history')
+
 
 
 def run(args, env=None):
@@ -21,15 +21,13 @@ def run(args, env=None):
         .stdout.decode('utf-8')
 
 
-def setup_environ():
-    os.environ['GIT_DISCOVERY_ACROSS_FILESYSTEM'] = '1'
-
-
-def setup_home():
+def setup_environment():
     env = os.environ.copy()
     env['LC_ALL'] = 'C'
-    os.environ['HOME'] = run(['perl', '-we', 'print((getpwuid $>)[7])'],
-                             env=env)
+    home = run(['perl', '-we', 'print((getpwuid $>)[7])'], env=env)
+
+    os.environ['GIT_DISCOVERY_ACROSS_FILESYSTEM'] = '1'
+    os.environ['HOME'] = home
 
 
 def cache(func):
@@ -81,13 +79,17 @@ class GitLoop:
     def __init__(self):
         self.anchor = Anchor()
         self.init_readline()
+        self.history = self.init_history()
 
     def init_readline(self):
         readline.parse_and_bind('tab: complete')
         readline.set_completer(complete)
         readline.set_completer_delims(' \t')
         self.init_history_file()
-        readline.read_history_file(HISTORY)
+        readline.read_history_file(self.history)
+
+    def init_history():
+        return os.path.expanduser('~/.gitl_history')
 
     def run(self):
         try:
@@ -107,12 +109,12 @@ class GitLoop:
         self.exit()
 
     def init_history_file(self):
-        if not os.path.exists(HISTORY):
-            with open(HISTORY, 'a'):
+        if not os.path.exists(self.history):
+            with open(self.history, 'a'):
                 pass
 
     def exit(self):
-        readline.write_history_file(HISTORY)
+        readline.write_history_file(self.history)
 
 
 class ArgsParser:
@@ -147,8 +149,7 @@ class Command:
 
 
 def main():
-    setup_environ()
-    setup_home()
+    setup_environment()
     args_parser = ArgsParser(sys.argv)
     if args_parser.is_version():
         Command.version()
