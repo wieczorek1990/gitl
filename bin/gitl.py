@@ -17,7 +17,7 @@ HISTORY = os.path.expanduser('~/.gitl_history')
 
 
 def setup_environ():
-    os.environ['GIT_DISCOVERY_ACROSS_FILESYSTEM'] = 1
+    os.environ['GIT_DISCOVERY_ACROSS_FILESYSTEM'] = '1'
 
 
 def setup_home():
