@@ -17,7 +17,7 @@ HISTORY = os.path.expanduser('~/.gitl_history')
 
 
 def setup_home():
-    home = subprocess.run(['perl', '-we', 'print((getpwuid $>)[7])'],
+    home = subprocess.run(['LC_ALL=C', 'perl', '-we', 'print((getpwuid $>)[7])'],
                           stdout=subprocess.PIPE)\
                      .stdout.decode('utf-8')
     os.environ['HOME'] = home
