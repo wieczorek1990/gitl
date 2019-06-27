@@ -15,7 +15,6 @@ CACHE = {}
 CACHE_TTL = 0.1
 
 
-
 def run(args, env=None):
     return subprocess.run(args, stdout=subprocess.PIPE, env=env)\
         .stdout.decode('utf-8')

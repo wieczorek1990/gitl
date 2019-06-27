@@ -22,8 +22,11 @@ plugs:
     interface: personal-files
     write:
       - $HOME/.gitconfig
-      - $HOME/.gitl_history
       - $HOME/.config/git/config
+  gitl:
+    interface: personal-files
+    write:
+      - $HOME/.gitl_history
 
 apps:
   gitl:
@@ -32,3 +35,4 @@ apps:
       - home
       - removable-media
       - gitconfig
+      - gitl
