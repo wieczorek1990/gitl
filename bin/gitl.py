@@ -9,11 +9,15 @@ import subprocess
 import sys
 import time
 
-VERSION = '2.0.1'
+VERSION = '2.0.2'
 
 CACHE = {}
 CACHE_TTL = 0.1
 HISTORY = os.path.expanduser('~/.gitl_history')
+
+
+def setup_environ():
+    os.environ['GIT_DISCOVERY_ACROSS_FILESYSTEM'] = 1
 
 
 def setup_home():
@@ -139,6 +143,7 @@ class Command:
 
 
 def main():
+    setup_environ()
     setup_home()
     args_parser = ArgsParser(sys.argv)
     if args_parser.is_version():
