@@ -11,8 +11,7 @@ confinement: strict
 parts:
   gitl:
     plugin: dump
-    source: https://github.com/wieczorek1990/gitl.git
-    source-type: git
+    source: .
     stage-packages:
       - git
       - openssh-client
