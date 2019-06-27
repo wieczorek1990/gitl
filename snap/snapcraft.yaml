@@ -18,7 +18,7 @@ parts:
       - python3
 
 plugs:
-  gitl:
+  gitconfig:
     interface: personal-files
     write:
       - $HOME/.gitconfig
@@ -31,4 +31,4 @@ apps:
     plugs:
       - home
       - removable-media
-      - gitl
+      - gitconfig
