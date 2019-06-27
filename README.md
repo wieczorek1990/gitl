@@ -24,7 +24,7 @@ To install in `/usr/local/` prefix type:
 git clone git@github.com:wieczorek1990/gitl.git && cd gitl/ && sudo make install
 ```
 
-### snap
+### snap (WIP)
 
 To install download [snap](https://snapcraft.io) and type:
 
