@@ -21,8 +21,10 @@ def setup_environ():
 
 
 def setup_home():
-    home = subprocess.run(['LC_ALL=C perl', '-we', 'print((getpwuid $>)[7])'],
-                          stdout=subprocess.PIPE)\
+    env = os.environ.copy()
+    env['LC_ALL'] = 'C'
+    home = subprocess.run(['perl', '-we', 'print((getpwuid $>)[7])'],
+                          stdout=subprocess.PIPE, env=env)\
                      .stdout.decode('utf-8')
     os.environ['HOME'] = home
 
