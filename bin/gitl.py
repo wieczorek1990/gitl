@@ -15,9 +15,10 @@ CACHE = {}
 CACHE_TTL = 0.1
 
 
-def run(args, env=None):
-    return subprocess.run(args, stdout=subprocess.PIPE, env=env)\
-        .stdout.decode('utf-8')
+def run(args, stdout=subprocess.PIPE, env=None):
+    output = subprocess.run(args, stdout=stdout, env=env).stdout
+    if output is not None:
+        return output.decode('utf-8')
 
 
 def setup_environment():
@@ -77,8 +78,8 @@ class Anchor:
 class GitLoop:
     def __init__(self):
         self.anchor = Anchor()
-        self.init_readline()
         self.history = self.init_history()
+        self.init_readline()
 
     def init_readline(self):
         readline.parse_and_bind('tab: complete')
@@ -87,7 +88,7 @@ class GitLoop:
         self.init_history_file()
         readline.read_history_file(self.history)
 
-    def init_history():
+    def init_history(self):
         return os.path.expanduser('~/.gitl_history')
 
     def run(self):
@@ -100,7 +101,7 @@ class GitLoop:
                 for command in commands:
                     try:
                         subcommand = shlex.split(command)
-                        run(['git'] + subcommand)
+                        run(['git'] + subcommand, stdout=None)
                     except ValueError:
                         pass
         except (EOFError, KeyboardInterrupt):
