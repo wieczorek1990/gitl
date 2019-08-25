@@ -1,7 +1,7 @@
 
 name: gitl
 base: core18
-version: '2.0.2'
+version: '1.0.0.0'
 summary: Git loop
 description: Git loop inspired by gitsh.
 
