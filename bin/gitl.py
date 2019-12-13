@@ -21,13 +21,6 @@ def run(args, stdout=subprocess.PIPE, env=None):
         return output.decode('utf-8')
 
 
-def setup_environment():
-    env = os.environ.copy()
-    env['LC_ALL'] = 'C'
-    home = run(['perl', '-we', 'print((getpwuid $>)[7])'], env=env)
-
-    os.environ['GIT_DISCOVERY_ACROSS_FILESYSTEM'] = '1'
-    os.environ['HOME'] = home
 
 
 def cache(func):
@@ -149,7 +142,6 @@ class Command:
 
 
 def main():
-    setup_environment()
     args_parser = ArgsParser(sys.argv)
     if args_parser.is_version():
         Command.version()
