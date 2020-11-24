@@ -9,7 +9,7 @@ import subprocess
 import sys
 import time
 
-VERSION = '1.0.0.0'
+VERSION = '1.1.0.1'
 
 CACHE = {}
 CACHE_TTL = 0.1
