@@ -21,8 +21,6 @@ def run(args, stdout=subprocess.PIPE, env=None):
         return output.decode('utf-8')
 
 
-
-
 def cache(func):
     @functools.wraps(func)
     def inner(text):
