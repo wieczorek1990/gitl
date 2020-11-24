@@ -3,7 +3,7 @@
 import functools
 import glob
 import os
-import readline
+import gnureadline as readline
 import shlex
 import subprocess
 import sys
