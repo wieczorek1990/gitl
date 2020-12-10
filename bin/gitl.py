@@ -21,16 +21,16 @@ def run(args, stdout=subprocess.PIPE, env=None):
         return output.decode('utf-8')
 
 
-def cache(func):
-    @functools.wraps(func)
+def cache(function):
+    @functools.wraps(function)
     def inner(text):
         now = time.time()
-        key = '{}:{}'.format(func.__name__, text)
+        key = '{}:{}'.format(function.__name__, text)
         if key in CACHE:
             last_time, last_result = CACHE[key]
             if now - last_time < CACHE_TTL:
                 return last_result
-        result = func(text)
+        result = function(text)
         CACHE[key] = (now, result)
         return result
 
@@ -40,8 +40,8 @@ def cache(func):
 @cache
 def complete_branches(text):
     output = run(['git', 'branch'])
-    branches = (line[2:-1].decode()
-                for line in output.readlines())
+    branches = (line[2:]
+                for line in output.splitlines())
     valid_branches = filter(lambda branch:
                             branch.startswith(text),
                             branches)
