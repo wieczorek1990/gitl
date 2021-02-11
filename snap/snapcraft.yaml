@@ -1,6 +1,6 @@
 
 name: gitl
-base: core18
+base: core20
 version: git
 summary: Git loop
 description: Git loop inspired by gitsh.
@@ -16,6 +16,13 @@ parts:
       - git
       - openssh-client
       - python3
+  gitl-python:
+    plugin: python
+    source: .
+    stage-packages:
+      - libncurses-dev
+    requirements:
+      - requirements.txt
 
 plugs:
   gitconfig:

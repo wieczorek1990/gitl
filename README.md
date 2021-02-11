@@ -21,3 +21,12 @@ To install in `/usr/local/` prefix type:
 ```bash
 git clone git@github.com:wieczorek1990/gitl.git && cd gitl/ && sudo make install
 ```
+
+### snap
+
+To install with [snap](https://snapcraft.io/) type:
+
+```bash
+sudo snap install gitl
+sudo snap connect gitl:gitconfig snapd
+```
