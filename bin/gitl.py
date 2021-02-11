@@ -5,11 +5,12 @@ import glob
 import os
 import gnureadline as readline
 import shlex
+import signal
 import subprocess
 import sys
 import time
 
-VERSION = '1.1.1.2'
+VERSION = '1.2.0.3'
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -68,9 +69,19 @@ class Anchor:
 
 class GitLoop:
     def __init__(self):
+        self.interrupt_counter = 0
         self.anchor = Anchor()
         self.history = self.init_history()
         self.init_readline()
+        self.init_signal()
+
+    def init_history(self):
+        return os.path.expanduser('~/.gitl_history')
+
+    def init_history_file(self):
+        if not os.path.exists(self.history):
+            with open(self.history, 'a'):
+                pass
 
     def init_readline(self):
         readline.parse_and_bind('tab: complete')
@@ -79,13 +90,25 @@ class GitLoop:
         self.init_history_file()
         readline.read_history_file(self.history)
 
-    def init_history(self):
-        return os.path.expanduser('~/.gitl_history')
+    def init_signal(self):
+        signal.signal(signal.SIGINT, self.interrupt)
+
+    def exit(self):
+        readline.write_history_file(self.history)
+
+    def interrupt(self, signum, frame):
+        self.interrupt_counter += 1
+        if self.interrupt_counter == 1:
+            print('^C\n{}'.format(self.anchor), end='')
+        elif self.interrupt_counter == 2:
+            self.exit()
+            exit(0)
 
     def run(self):
         try:
             while True:
                 input_data = input(self.anchor)
+                self.interrupt_counter = 0
                 if input_data == '':
                     continue
                 commands = input_data.split(';')
@@ -98,14 +121,6 @@ class GitLoop:
         except (EOFError, KeyboardInterrupt):
             pass
         self.exit()
-
-    def init_history_file(self):
-        if not os.path.exists(self.history):
-            with open(self.history, 'a'):
-                pass
-
-    def exit(self):
-        readline.write_history_file(self.history)
 
 
 class ArgsParser:
