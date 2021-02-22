@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-VERSION = '1.2.0.3'
+VERSION = '1.2.1.4'
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -99,27 +99,32 @@ class GitLoop:
     def interrupt(self, signum, frame):
         self.interrupt_counter += 1
         if self.interrupt_counter == 1:
-            print('^C\n{}'.format(self.anchor), end='')
+            raise KeyboardInterrupt
         elif self.interrupt_counter == 2:
             self.exit()
-            exit(0)
+            sys.exit(0)
+
+    def execute(self, input_data):
+        commands = input_data.split(';')
+        for command in commands:
+            try:
+                subcommand = shlex.split(command)
+                run(['git'] + subcommand, stdout=None)
+            except ValueError:
+                pass
 
     def run(self):
-        try:
-            while True:
+        while True:
+            try:
                 input_data = input(self.anchor)
                 self.interrupt_counter = 0
                 if input_data == '':
                     continue
-                commands = input_data.split(';')
-                for command in commands:
-                    try:
-                        subcommand = shlex.split(command)
-                        run(['git'] + subcommand, stdout=None)
-                    except ValueError:
-                        pass
-        except (EOFError, KeyboardInterrupt):
-            pass
+                self.execute(input_data)
+            except KeyboardInterrupt:
+                print('^C')
+            except EOFError:
+                break
         self.exit()
 
 
