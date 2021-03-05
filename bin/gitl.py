@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-VERSION = '1.2.1.4'
+VERSION = '1.2.2.5'
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -107,6 +107,8 @@ class GitLoop:
     def execute(self, input_data):
         commands = input_data.split(';')
         for command in commands:
+            if command == '':
+                continue
             try:
                 subcommand = shlex.split(command)
                 run(['git'] + subcommand, stdout=None)
@@ -118,8 +120,6 @@ class GitLoop:
             try:
                 input_data = input(self.anchor)
                 self.interrupt_counter = 0
-                if input_data == '':
-                    continue
                 self.execute(input_data)
             except KeyboardInterrupt:
                 print('^C')
