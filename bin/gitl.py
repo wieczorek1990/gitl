@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-VERSION = '1.2.2.5'
+VERSION = '1.3.0.6'
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -38,15 +38,18 @@ def cache(function):
     return inner
 
 
+def valid_completions(iterable, text):
+    return list(filter(
+        lambda entry: entry.startswith(text),
+        iterable
+    ))
+
+
 @cache
 def complete_branches(text):
     output = run(['git', 'branch'])
-    branches = (line[2:]
-                for line in output.splitlines())
-    valid_branches = filter(lambda branch:
-                            branch.startswith(text),
-                            branches)
-    return list(valid_branches)
+    branches = (line[2:] for line in output.splitlines())
+    return valid_completions(branches, text)
 
 
 @cache
@@ -54,8 +57,19 @@ def complete_paths(text):
     return glob.glob(text + '*')
 
 
+@cache
+def complete_tags(text):
+    output = run(['git', 'tag'])
+    tags = (line for line in output.splitlines())
+    return valid_completions(tags, text)
+
+
 def complete(text, state):
-    completions = complete_branches(text) + complete_paths(text)
+    completions = (
+        complete_branches(text) +
+        complete_tags(text) +
+        complete_paths(text)
+    )
     return completions[state]
 
 
@@ -152,11 +166,13 @@ class Command:
 
     @staticmethod
     def help():
-        print('SYNOPSIS\n'
-              '\tgitl\n\n'
-              'OPTIONS\n'
-              '\t--help     Print help\n'
-              '\t--version  Print version\n')
+        print(
+            'SYNOPSIS\n'
+            '\tgitl\n\n'
+            'OPTIONS\n'
+            '\t--help     Print help\n'
+            '\t--version  Print version\n'
+        )
 
 
 def main():
