@@ -2,15 +2,15 @@
 
 import functools
 import glob
-import os
 import gnureadline as readline
+import os
 import shlex
 import signal
 import subprocess
 import sys
 import time
 
-VERSION = '2.0.0.7'
+VERSION = '2.0.0.8'
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -54,7 +54,7 @@ def complete_branches(text):
 
 @cache
 def complete_paths(text):
-    return glob.glob(text + '*')
+    return glob.glob('{}*'.format(text))
 
 
 @cache
@@ -67,15 +67,16 @@ def complete_tags(text):
 def complete(text, state):
     completions = (
         complete_branches(text) +
-        complete_tags(text) +
-        complete_paths(text)
+        complete_paths(text) +
+        complete_tags(text)
     )
     return completions[state]
 
 
 class Anchor:
     def __init__(self):
-        self.root = os.getcwd().split('/')[-1] + ': '
+        root = os.getcwd().split('/')[-1]
+        self.root = '{}: '.format(root)
 
     def __str__(self):
         return self.root
