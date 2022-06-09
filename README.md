@@ -6,9 +6,11 @@ Git loop inspired by [gitsh](https://github.com/thoughtbot/gitsh).
 
 Features:
 
-* loop
-* branch and file completion
+* loop (with interrupts counting)
+* readline input
+* branch, file, tag completion
 * history
+* version and help flags
 
 Contributions welcome.
 
