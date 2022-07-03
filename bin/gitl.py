@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-VERSION = '2.0.1.9'
+VERSION = '2.0.2.10'
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -164,7 +164,7 @@ class GitLoop:
                 continue
             try:
                 subcommand = shlex.split(command)
-                run(['git'] + subcommand, stdout=subprocess.DEVNULL)
+                run(['git'] + subcommand, stdout=1)
             except ValueError:
                 pass
 
