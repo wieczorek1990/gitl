@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-VERSION = '2.0.0.8'
+VERSION = '2.0.1.9'
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -66,9 +66,7 @@ def complete_tags(text):
 
 def complete(text, state):
     completions = (
-        complete_branches(text) +
-        complete_paths(text) +
-        complete_tags(text)
+        complete_branches(text) + complete_paths(text) + complete_tags(text)
     )
     return completions[state]
 
@@ -82,6 +80,12 @@ class Anchor:
         return self.root
 
 
+class Character:
+    SINGLE_QUOTATION_MARK = '\''
+    DOUBLE_QUOTATION_MARK = '"'
+    SEMICOLON = ';'
+
+
 class GitLoop:
     def __init__(self):
         self.interrupt_counter = 0
@@ -90,7 +94,8 @@ class GitLoop:
         self.init_readline()
         self.init_signal()
 
-    def init_history(self):
+    @staticmethod
+    def init_history():
         return os.path.expanduser('~/.gitl_history')
 
     def init_history_file(self):
@@ -111,7 +116,7 @@ class GitLoop:
     def exit(self):
         readline.write_history_file(self.history)
 
-    def interrupt(self, signum, frame):
+    def interrupt(self, signum, frame):  # noqa
         self.interrupt_counter += 1
         if self.interrupt_counter == 1:
             raise KeyboardInterrupt
@@ -119,14 +124,47 @@ class GitLoop:
             self.exit()
             sys.exit(0)
 
-    def execute(self, input_data):
-        commands = input_data.split(';')
+    @staticmethod
+    def get_commands(input_data):
+        commands = []
+        current_command = []
+        in_single_quoted_string = False
+        in_double_quoted_string = False
+
+        def append():
+            original_command = ''.join(current_command)
+            command = original_command.lstrip().rstrip()
+            commands.append(command)
+
+        for character in input_data:
+            match character:
+                case Character.SINGLE_QUOTATION_MARK:
+                    if not in_double_quoted_string:
+                        in_single_quoted_string = not in_single_quoted_string
+                case Character.DOUBLE_QUOTATION_MARK:
+                    if not in_single_quoted_string:
+                        in_double_quoted_string = not in_double_quoted_string
+                case Character.SEMICOLON:
+                    ignore_semicolon = (
+                        in_single_quoted_string or in_double_quoted_string
+                    )
+                    if not ignore_semicolon:
+                        append()
+                        current_command = []
+                        continue
+            current_command.append(character)
+        append()
+        return commands
+
+    @classmethod
+    def execute(cls, input_data):
+        commands = cls.get_commands(input_data)
         for command in commands:
             if command == '':
                 continue
             try:
                 subcommand = shlex.split(command)
-                run(['git'] + subcommand, stdout=None)
+                run(['git'] + subcommand, stdout=subprocess.DEVNULL)
             except ValueError:
                 pass
 
