@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-VERSION = '2.1.0.11'
+VERSION = "2.1.0.11"
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -22,7 +22,7 @@ TWO_DOTS_LENGTH = len(TWO_DOTS)
 def run(args, stdout=subprocess.PIPE, env=None):
     output = subprocess.run(args, stdout=stdout, env=env).stdout
     if output is not None:
-        return output.decode('utf-8')
+        return output.decode("utf-8")
 
 
 def cache(function):
@@ -46,22 +46,19 @@ def cache(function):
 
 
 def valid_completions(iterable, text):
-    return list(filter(
-        lambda entry: entry.startswith(text),
-        iterable
-    ))
+    return list(filter(lambda entry: entry.startswith(text), iterable))
 
 
 @cache
 def complete_branches(text):
-    output = run(['git', 'branch'])
+    output = run(["git", "branch"])
     branches = (line[2:] for line in output.splitlines())
     return valid_completions(branches, text)
 
 
 @cache
 def complete_tags(text):
-    output = run(['git', 'tag'])
+    output = run(["git", "tag"])
     tags = (line for line in output.splitlines())
     return valid_completions(tags, text)
 
@@ -78,14 +75,14 @@ def split(text):
         return None
     else:
         text_before = text[:index_of_two_dots]
-        text_after = text[index_of_two_dots + TWO_DOTS_LENGTH:]
+        index_after_two_dots = index_of_two_dots + TWO_DOTS_LENGTH
+        text_after = text[index_after_two_dots:]
         return text_before, text_after
 
 
 def prefix_completions(prefix, completions):
     prefixed_completions = [
-        f"{prefix}{completion}"
-        for completion in completions
+        f"{prefix}{completion}" for completion in completions
     ]
     return prefixed_completions
 
@@ -112,17 +109,17 @@ def complete(text, state):
 
 class Anchor:
     def __init__(self):
-        root = os.getcwd().split('/')[-1]
-        self.root = '{}: '.format(root)
+        root = os.getcwd().split("/")[-1]
+        self.root = "{}: ".format(root)
 
     def __str__(self):
         return self.root
 
 
 class Character:
-    SINGLE_QUOTATION_MARK = '\''
+    SINGLE_QUOTATION_MARK = "'"
     DOUBLE_QUOTATION_MARK = '"'
-    SEMICOLON = ';'
+    SEMICOLON = ";"
 
 
 class GitLoop:
@@ -135,17 +132,17 @@ class GitLoop:
 
     @staticmethod
     def init_history():
-        return os.path.expanduser('~/.gitl_history')
+        return os.path.expanduser("~/.gitl_history")
 
     def init_history_file(self):
         if not os.path.exists(self.history):
-            with open(self.history, 'a'):
+            with open(self.history, "a"):
                 pass
 
     def init_readline(self):
-        readline.parse_and_bind('tab: complete')
+        readline.parse_and_bind("tab: complete")
         readline.set_completer(complete)
-        readline.set_completer_delims(' \t')
+        readline.set_completer_delims(" \t")
         self.init_history_file()
         readline.read_history_file(self.history)
 
@@ -158,7 +155,7 @@ class GitLoop:
     def interrupt(self, signum, frame):  # noqa
         self.interrupt_counter += 1
         if self.interrupt_counter == 1:
-            raise KeyboardInterrupt
+            raise KeyboardInterrupt()
         elif self.interrupt_counter == 2:
             self.exit()
             sys.exit(0)
@@ -171,7 +168,7 @@ class GitLoop:
         in_double_quoted_string = False
 
         def append():
-            original_command = ''.join(current_command)
+            original_command = "".join(current_command)
             command = original_command.lstrip().rstrip()
             commands.append(command)
 
@@ -199,11 +196,11 @@ class GitLoop:
     def execute(cls, input_data):
         commands = cls.get_commands(input_data)
         for command in commands:
-            if command == '':
+            if command == "":
                 continue
             try:
                 subcommand = shlex.split(command)
-                run(['git'] + subcommand, stdout=1)
+                run(["git"] + subcommand, stdout=1)
             except ValueError:
                 pass
 
@@ -214,7 +211,7 @@ class GitLoop:
                 self.interrupt_counter = 0
                 self.execute(input_data)
             except KeyboardInterrupt:
-                print('^C')
+                print("^C")
             except EOFError:
                 break
         self.exit()
@@ -228,28 +225,28 @@ class ArgsParser:
         return len(self.argv) == 2
 
     def first(self, option):
-        return self.argv[1] == '--{}'.format(option)
+        return self.argv[1] == "--{}".format(option)
 
     def is_version(self):
-        return self.two() and self.first('version')
+        return self.two() and self.first("version")
 
     def is_help(self):
-        return self.two() and self.first('help')
+        return self.two() and self.first("help")
 
 
 class Command:
     @staticmethod
     def version():
-        print('gitl version {}'.format(VERSION))
+        print("gitl version {}".format(VERSION))
 
     @staticmethod
     def help():
         print(
-            'SYNOPSIS\n'
-            '\tgitl\n\n'
-            'OPTIONS\n'
-            '\t--help     Print help\n'
-            '\t--version  Print version\n'
+            "SYNOPSIS\n"
+            "\tgitl\n\n"
+            "OPTIONS\n"
+            "\t--help     Print help\n"
+            "\t--version  Print version\n"
         )
 
 
@@ -263,5 +260,5 @@ def main():
         GitLoop().run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
