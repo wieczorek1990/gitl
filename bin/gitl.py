@@ -10,10 +10,13 @@ import subprocess
 import sys
 import time
 
-VERSION = '2.0.2.10'
+VERSION = '2.1.0.11'
 
 CACHE = {}
 CACHE_TTL = 0.1
+
+TWO_DOTS = ".."
+TWO_DOTS_LENGTH = len(TWO_DOTS)
 
 
 def run(args, stdout=subprocess.PIPE, env=None):
@@ -24,14 +27,18 @@ def run(args, stdout=subprocess.PIPE, env=None):
 
 def cache(function):
     @functools.wraps(function)
-    def inner(text):
+    def inner(text, *args, **kwargs):
         now = time.time()
-        key = '{}:{}'.format(function.__name__, text)
+
+        function_name = function.__name__
+        key = f"{function_name}:{text}"
+
         if key in CACHE:
             last_time, last_result = CACHE[key]
             if now - last_time < CACHE_TTL:
                 return last_result
-        result = function(text)
+
+        result = function(text, *args, **kwargs)
         CACHE[key] = (now, result)
         return result
 
@@ -53,21 +60,53 @@ def complete_branches(text):
 
 
 @cache
-def complete_paths(text):
-    return glob.glob('{}*'.format(text))
-
-
-@cache
 def complete_tags(text):
     output = run(['git', 'tag'])
     tags = (line for line in output.splitlines())
     return valid_completions(tags, text)
 
 
+@cache
+def complete_paths(text):
+    return glob.glob(f"{text}*")
+
+
+def split(text):
+    try:
+        index_of_two_dots = text.index(TWO_DOTS)
+    except ValueError:
+        return None
+    else:
+        text_before = text[:index_of_two_dots]
+        text_after = text[index_of_two_dots + TWO_DOTS_LENGTH:]
+        return text_before, text_after
+
+
+def prefix_completions(prefix, completions):
+    prefixed_completions = [
+        f"{prefix}{completion}"
+        for completion in completions
+    ]
+    return prefixed_completions
+
+
 def complete(text, state):
-    completions = (
-        complete_branches(text) + complete_paths(text) + complete_tags(text)
-    )
+    text_parts = split(text)
+    if text_parts is None:
+        branches = complete_branches(text)
+        tags = complete_tags(text)
+    else:
+        text_before, text_after = text_parts
+        prefix = f"{text_before}{TWO_DOTS}"
+
+        branches_wihtout_prefix = complete_branches(text_after)
+        tags_without_prefix = complete_tags(text_after)
+
+        branches = prefix_completions(prefix, branches_wihtout_prefix)
+        tags = prefix_completions(prefix, tags_without_prefix)
+    paths = complete_paths(text)
+
+    completions = branches + tags + paths
     return completions[state]
 
 
