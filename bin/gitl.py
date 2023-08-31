@@ -169,7 +169,7 @@ class GitLoop:
 
         def append():
             original_command = "".join(current_command)
-            command = original_command.lstrip().rstrip()
+            command = original_command.strip()
             commands.append(command)
 
         for character in input_data:
