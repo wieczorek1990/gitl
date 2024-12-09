@@ -1,4 +1,0 @@
-#!/bin/bash
-# Formats binary files.
-
-black --line-length 80 bin/

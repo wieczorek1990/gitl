@@ -1,0 +1,4 @@
+#!/bin/bash
+# Runs style checks on source files.
+
+flake8 src/

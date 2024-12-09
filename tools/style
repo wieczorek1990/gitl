@@ -1,4 +1,0 @@
-#!/bin/bash
-# Runs style checks on binary files.
-
-flake8 bin/
