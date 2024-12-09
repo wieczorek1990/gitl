@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-VERSION = "2.1.0.12"
+VERSION = "2.1.0.13"
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -46,7 +46,10 @@ def cache(function):
 
 
 def valid_completions(iterable, text):
-    return list(filter(lambda entry: entry.startswith(text), iterable))
+    valid_completions_iterator = filter(
+        lambda entry: entry.startswith(text), iterable
+    )
+    return list(valid_completions_iterator)
 
 
 @cache
@@ -96,10 +99,10 @@ def complete(text, state):
         text_before, text_after = text_parts
         prefix = f"{text_before}{TWO_DOTS}"
 
-        branches_wihtout_prefix = complete_branches(text_after)
+        branches_without_prefix = complete_branches(text_after)
         tags_without_prefix = complete_tags(text_after)
 
-        branches = prefix_completions(prefix, branches_wihtout_prefix)
+        branches = prefix_completions(prefix, branches_without_prefix)
         tags = prefix_completions(prefix, tags_without_prefix)
     paths = complete_paths(text)
 

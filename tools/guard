@@ -1,5 +1,7 @@
 #!/bin/bash
 # Runs guard checks.
 
-./tools/format &&
- ./tools/style
+echo 'Guard!' &&
+ ./tools/format &&
+ ./tools/style &&
+ echo 'Done.'

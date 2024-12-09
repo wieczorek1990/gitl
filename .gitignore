@@ -1,6 +1,4 @@
 
-*.snap
 *.swp
 .idea/
 .DS_Store
-/venv/

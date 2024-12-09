@@ -2,7 +2,7 @@
 gitl
 ====
 
-Git loop inspired by [gitsh](https://github.com/thoughtbot/gitsh).
+Git loop inspired by [`gitsh`](https://github.com/thoughtbot/gitsh).
 
 Features:
 
