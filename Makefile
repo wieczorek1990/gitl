@@ -1,6 +1,7 @@
 
 install:
 	pip3 install --break-system-packages -U -r requirements.txt
+	sudo mkdir -p /usr/local/bin/
 	sudo cp src/gitl.py /usr/local/bin/gitl
 
 install_dev:

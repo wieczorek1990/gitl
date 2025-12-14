@@ -2,7 +2,6 @@
 
 import functools
 import glob
-import gnureadline as readline
 import os
 import shlex
 import signal
@@ -10,7 +9,9 @@ import subprocess
 import sys
 import time
 
-VERSION = "2.1.0.13"
+import gnureadline as readline
+
+VERSION = "2.2.0.14"
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -55,6 +56,8 @@ def valid_completions(iterable, text):
 @cache
 def complete_branches(text):
     output = run(["git", "branch"])
+    if not output:
+        return []
     branches = (line[2:] for line in output.splitlines())
     return valid_completions(branches, text)
 
@@ -62,13 +65,17 @@ def complete_branches(text):
 @cache
 def complete_tags(text):
     output = run(["git", "tag"])
+    if not output:
+        return []
     tags = (line for line in output.splitlines())
     return valid_completions(tags, text)
 
 
 @cache
 def complete_paths(text):
-    return glob.glob(f"{text}*")
+    paths = glob.glob(f"{text}*")
+    paths = [f"'{path}'" for path in paths]
+    return paths
 
 
 def split(text):
@@ -196,14 +203,23 @@ class GitLoop:
         return commands
 
     @classmethod
+    def execute_command(cls, command):
+        command = shlex.split(command)
+        run(["git"] + command, stdout=1)
+
+    @classmethod
     def execute(cls, input_data):
         commands = cls.get_commands(input_data)
         for command in commands:
+            # empty command
             if command == "":
                 continue
             try:
-                subcommand = shlex.split(command)
-                run(["git"] + subcommand, stdout=1)
+                # split command by semicolon
+                multicommand = command.split(";")
+
+                for subcommand in multicommand:
+                    cls.execute_command(subcommand)
             except ValueError:
                 pass
 
