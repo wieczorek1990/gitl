@@ -74,7 +74,6 @@ def complete_tags(text):
 @cache
 def complete_paths(text):
     paths = glob.glob(f"{text}*")
-    paths = [f"'{path}'" for path in paths]
     return paths
 
 
