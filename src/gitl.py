@@ -11,7 +11,7 @@ import time
 
 import gnureadline as readline
 
-VERSION = "2.2.0.14"
+VERSION = "2.2.1.15"
 
 CACHE = {}
 CACHE_TTL = 0.1
