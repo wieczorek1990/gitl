@@ -182,21 +182,20 @@ class GitLoop:
             commands.append(command)
 
         for character in input_data:
-            match character:
-                case Character.SINGLE_QUOTATION_MARK:
-                    if not in_double_quoted_string:
-                        in_single_quoted_string = not in_single_quoted_string
-                case Character.DOUBLE_QUOTATION_MARK:
-                    if not in_single_quoted_string:
-                        in_double_quoted_string = not in_double_quoted_string
-                case Character.SEMICOLON:
-                    ignore_semicolon = (
-                        in_single_quoted_string or in_double_quoted_string
-                    )
-                    if not ignore_semicolon:
-                        append()
-                        current_command = []
-                        continue
+            if character is Character.SINGLE_QUOTATION_MARK:
+                if not in_double_quoted_string:
+                    in_single_quoted_string = not in_single_quoted_string
+            elif character is Character.DOUBLE_QUOTATION_MARK:
+                if not in_single_quoted_string:
+                    in_double_quoted_string = not in_double_quoted_string
+            elif character is Character.SEMICOLON:
+                ignore_semicolon = (
+                    in_single_quoted_string or in_double_quoted_string
+                )
+                if not ignore_semicolon:
+                    append()
+                    current_command = []
+                    continue
             current_command.append(character)
         append()
         return commands
