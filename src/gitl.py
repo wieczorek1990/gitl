@@ -3,12 +3,31 @@
 import functools
 import glob
 import os
-import readline
+import platform
 import shlex
 import signal
 import subprocess
 import sys
 import time
+
+system_linux = "Linux"
+system_darwin = "Darwin"
+supported_systems = {system_linux, system_darwin}
+
+
+def print_unsupported():
+    print("Your system is unsupported.")
+    print(f"Supported systems are: {', '.join(supported_systems)}.")
+
+
+system = platform.system()
+if system == system_linux:
+    import readline
+elif system == system_darwin:
+    import gnureadline as readline
+else:
+    print_unsupported()
+    exit(1)
 
 VERSION = "2.2.1.16"
 
