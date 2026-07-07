@@ -3,15 +3,14 @@
 import functools
 import glob
 import os
+import readline
 import shlex
 import signal
 import subprocess
 import sys
 import time
 
-import gnureadline as readline
-
-VERSION = "2.2.1.15"
+VERSION = "2.2.1.16"
 
 CACHE = {}
 CACHE_TTL = 0.1
