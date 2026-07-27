@@ -1,0 +1,4 @@
+#!/bin/sh
+# Calls ruff.
+
+ruff check --fix src/

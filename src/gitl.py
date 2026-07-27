@@ -27,7 +27,7 @@ elif system == system_darwin:
     import gnureadline as readline
 else:
     print_unsupported()
-    exit(1)
+    sys.exit(1)
 
 VERSION = "2.2.1.16"
 
@@ -39,7 +39,7 @@ TWO_DOTS_LENGTH = len(TWO_DOTS)
 
 
 def run(args, stdout=subprocess.PIPE, env=None):
-    output = subprocess.run(args, stdout=stdout, env=env).stdout
+    output = subprocess.run(args, stdout=stdout, env=env, check=False).stdout
     if output is not None:
         return output.decode("utf-8")
 
@@ -137,7 +137,7 @@ def complete(text, state):
 class Anchor:
     def __init__(self):
         root = os.getcwd().split("/")[-1]
-        self.root = "{}: ".format(root)
+        self.root = f"{root}: "
 
     def __str__(self):
         return self.root
@@ -179,7 +179,7 @@ class GitLoop:
     def exit(self):
         readline.write_history_file(self.history)
 
-    def interrupt(self, signum, frame):  # noqa
+    def interrupt(self, signum, frame):
         self.interrupt_counter += 1
         if self.interrupt_counter == 1:
             raise KeyboardInterrupt()
@@ -260,7 +260,7 @@ class ArgsParser:
         return len(self.argv) == 2
 
     def first(self, option):
-        return self.argv[1] == "--{}".format(option)
+        return self.argv[1] == f"--{option}"
 
     def is_version(self):
         return self.two() and self.first("version")
@@ -272,7 +272,7 @@ class ArgsParser:
 class Command:
     @staticmethod
     def version():
-        print("gitl version {}".format(VERSION))
+        print(f"gitl version {VERSION}")
 
     @staticmethod
     def help():
