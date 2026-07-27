@@ -2,6 +2,7 @@
 # Runs guard checks.
 
 echo 'Guard!' &&
+ ./bin/sort &&
  ./bin/format &&
  ./bin/style &&
  ./bin/dog &&
