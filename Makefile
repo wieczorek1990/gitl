@@ -1,4 +1,5 @@
 install:
+	pip3 install -U gnureadline
 	mkdir -p ~/.local/bin/
 	cp src/gitl.py ~/.local/bin/gitl
 
