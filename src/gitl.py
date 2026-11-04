@@ -30,7 +30,7 @@ else:
     print_unsupported()
     sys.exit(1)
 
-VERSION = "2.2.1.16"
+VERSION = "3.0.0.17"
 
 CACHE = {}
 CACHE_TTL = 0.1
@@ -66,10 +66,7 @@ def cache(function):
 
 
 def valid_completions(iterable, text):
-    valid_completions_iterator = filter(
-        lambda entry: entry.startswith(text), iterable
-    )
-    return list(valid_completions_iterator)
+    return [entry for entry in iterable if entry.startswith(text)]
 
 
 @cache
@@ -109,10 +106,7 @@ def split(text):
 
 
 def prefix_completions(prefix, completions):
-    prefixed_completions = [
-        f"{prefix}{completion}" for completion in completions
-    ]
-    return prefixed_completions
+    return [f"{prefix}{completion}" for completion in completions]
 
 
 def complete(text, state):
@@ -144,10 +138,9 @@ class Anchor:
         return self.root
 
 
-class Character:
-    SINGLE_QUOTATION_MARK = "'"
-    DOUBLE_QUOTATION_MARK = '"'
-    SEMICOLON = ";"
+SINGLE_QUOTE = "'"
+DOUBLE_QUOTE = '"'
+SEMICOLON = ";"
 
 
 class GitLoop:
@@ -201,20 +194,16 @@ class GitLoop:
             commands.append(command)
 
         for character in input_data:
-            if character is Character.SINGLE_QUOTATION_MARK:
-                if not in_double_quoted_string:
-                    in_single_quoted_string = not in_single_quoted_string
-            elif character is Character.DOUBLE_QUOTATION_MARK:
-                if not in_single_quoted_string:
-                    in_double_quoted_string = not in_double_quoted_string
-            elif character is Character.SEMICOLON:
-                ignore_semicolon = (
-                    in_single_quoted_string or in_double_quoted_string
-                )
-                if not ignore_semicolon:
-                    append()
-                    current_command = []
-                    continue
+            if character == SINGLE_QUOTE and not in_double_quoted_string:
+                in_single_quoted_string = not in_single_quoted_string
+            elif character == DOUBLE_QUOTE and not in_single_quoted_string:
+                in_double_quoted_string = not in_double_quoted_string
+            elif character == SEMICOLON and not (
+                in_single_quoted_string or in_double_quoted_string
+            ):
+                append()
+                current_command = []
+                continue
             current_command.append(character)
         append()
         return commands
@@ -228,15 +217,10 @@ class GitLoop:
     def execute(cls, input_data):
         commands = cls.get_commands(input_data)
         for command in commands:
-            # empty command
-            if command == "":
+            if not command:
                 continue
             try:
-                # split command by semicolon
-                multicommand = command.split(";")
-
-                for subcommand in multicommand:
-                    cls.execute_command(subcommand)
+                cls.execute_command(command)
             except ValueError:
                 pass
 
@@ -253,45 +237,25 @@ class GitLoop:
         self.exit()
 
 
-class ArgsParser:
-    def __init__(self, argv):
-        self.argv = argv
-
-    def two(self):
-        return len(self.argv) == 2
-
-    def first(self, option):
-        return self.argv[1] == f"--{option}"
-
-    def is_version(self):
-        return self.two() and self.first("version")
-
-    def is_help(self):
-        return self.two() and self.first("help")
+def print_version():
+    print(f"gitl version {VERSION}")
 
 
-class Command:
-    @staticmethod
-    def version():
-        print(f"gitl version {VERSION}")
-
-    @staticmethod
-    def help():
-        print(
-            "SYNOPSIS\n"
-            "\tgitl\n\n"
-            "OPTIONS\n"
-            "\t--help     Print help\n"
-            "\t--version  Print version\n"
-        )
+def print_help():
+    print(
+        "SYNOPSIS\n"
+        "\tgitl\n\n"
+        "OPTIONS\n"
+        "\t--help     Print help\n"
+        "\t--version  Print version\n"
+    )
 
 
 def main():
-    args_parser = ArgsParser(sys.argv)
-    if args_parser.is_version():
-        Command.version()
-    elif args_parser.is_help():
-        Command.help()
+    if len(sys.argv) == 2 and sys.argv[1] == "--version":
+        print_version()
+    elif len(sys.argv) == 2 and sys.argv[1] == "--help":
+        print_help()
     else:
         GitLoop().run()
 
