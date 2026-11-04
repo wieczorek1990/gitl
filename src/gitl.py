@@ -222,7 +222,7 @@ class GitLoop:
             try:
                 cls.execute_command(command)
             except ValueError:
-                pass
+                print(f"Error: malformed command: {command}")
 
     def run(self):
         while True:

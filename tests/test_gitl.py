@@ -143,6 +143,19 @@ class TestPrintHelp(unittest.TestCase):
         self.assertIn("--version", args[0])
 
 
+class TestExecute(unittest.TestCase):
+    def test_prints_error_on_malformed_command(self):
+        with patch("builtins.print") as mock_print:
+            gitl.GitLoop.execute('log --grep="unfinished')
+            mock_print.assert_called_once()
+            self.assertIn("malformed command", mock_print.call_args[0][0])
+
+    def test_skips_empty_commands(self):
+        with patch.object(gitl.GitLoop, "execute_command") as mock_exec:
+            gitl.GitLoop.execute("log; ; status")
+            self.assertEqual(mock_exec.call_count, 2)
+
+
 class TestRun(unittest.TestCase):
     @patch("gitl.subprocess.run")
     def test_run_returns_output(self, mock_run):
