@@ -246,8 +246,8 @@ def print_help():
         "SYNOPSIS\n"
         "\tgitl\n\n"
         "OPTIONS\n"
-        "\t--help     Print help\n"
-        "\t--version  Print version\n"
+        "\t--help     Print help.\n"
+        "\t--version  Print version.\n"
     )
 
 

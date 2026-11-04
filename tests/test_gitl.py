@@ -3,7 +3,7 @@ import sys
 import unittest
 from unittest.mock import patch, MagicMock
 
-# Mock gnureadline before importing gitl
+# Mock gnureadline before importing gitl.
 if sys.platform == "darwin":
     mock_readline = MagicMock()
     sys.modules["gnureadline"] = mock_readline
@@ -58,7 +58,7 @@ class TestSplit(unittest.TestCase):
         self.assertEqual(result, ("main", ""))
 
     def test_multiple_two_dots(self):
-        # Should split on the first occurrence
+        # Should split on the first occurrence.
         result = gitl.split("a..b..c")
         self.assertEqual(result, ("a", "b..c"))
 
@@ -91,7 +91,7 @@ class TestGetCommands(unittest.TestCase):
         self.assertEqual(result, ['log --grep="a;b"'])
 
     def test_mixed_quotes(self):
-        # Semicolon in double quotes should not split
+        # Semicolon in double quotes should not split.
         result = gitl.GitLoop.get_commands("log; 'a;b'")
         self.assertEqual(result, ["log", "'a;b'"])
 
@@ -108,7 +108,7 @@ class TestGetCommands(unittest.TestCase):
         self.assertEqual(result, ["log", ""])
 
     def test_nested_quotes(self):
-        # Single quote inside double quotes should not toggle single quote state
+        # Single quote inside double quotes should not toggle single quote state.
         result = gitl.GitLoop.get_commands('log --grep="it\'s"; status')
         self.assertEqual(result, ['log --grep="it\'s"', "status"])
 
